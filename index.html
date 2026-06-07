@@ -20,6 +20,10 @@ body {
 
 #canvas {
 	display: block;
+	user-select: none;
+	-webkit-user-select: none;
+	-webkit-touch-callout: none;
+	touch-action: none;
 }
 
 #canvas:focus {
@@ -128,11 +132,45 @@ body {
 	}());
 	</script><progress id="status-progress"></progress>
 			<div id="status-notice"></div>
-		</div>
+		</div>		<script>
+		(function () {
+			function setupMobileCanvasInput() {
+				const canvas = document.getElementById('canvas');
+				if (!canvas || canvas.dataset.mobileInputReady === 'true') {
+					return;
+				}
+				canvas.dataset.mobileInputReady = 'true';
+				canvas.setAttribute('tabindex', '0');
+				const focusCanvas = function () {
+					try {
+						canvas.focus({ preventScroll: true });
+					} catch (error) {
+						canvas.focus();
+					}
+				};
+				const preventBrowserGesture = function (event) {
+					if (event.cancelable) {
+						event.preventDefault();
+					}
+				};
+				['touchstart', 'touchmove', 'touchend', 'touchcancel', 'gesturestart', 'gesturechange', 'gestureend'].forEach(function (type) {
+					canvas.addEventListener(type, preventBrowserGesture, { passive: false });
+				});
+				['touchstart', 'pointerdown', 'mousedown'].forEach(function (type) {
+					canvas.addEventListener(type, focusCanvas, { passive: true });
+				});
+			}
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', setupMobileCanvasInput);
+			} else {
+				setupMobileCanvasInput();
+			}
+		}());
+		</script>
 
 		<script src="index.js"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":31126572,"index.wasm":37700666},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":31127916,"index.wasm":37700666},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
 const GODOT_THREADS_ENABLED = false;
 const engine = new Engine(GODOT_CONFIG);
 
